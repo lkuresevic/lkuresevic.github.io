@@ -7,13 +7,23 @@
     <style>
         /* General Styling */
         body {
-            overflow: hidden;
             font-family: Consolas, 'Courier New', monospace;
             margin: 0;
             padding: 0;
             background-color: #1b1d1e;
             color: #d3d0c8;
         }
+
+        .about::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .about {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+
 
         /* Layout Styling */
         .layout {
@@ -150,6 +160,16 @@
 
         .repositories .card a:hover {
             text-decoration: underline;
+        }
+
+        .repositories::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .repositories {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
         }
 
         /* Media Queries for Responsiveness */
