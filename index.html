@@ -160,13 +160,13 @@
         /* Tablets and small devices */
         @media (max-width: 1300px) {
             .layout {
-                grid-template-columns: 1fr;
+                grid-template-columns: 40% 20% 40%
                 grid-template-rows: auto 1fr auto;
             }
             .profile {
                 border: 2px solid #5f5a60; 
                 border-radius: 8px;     
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);        
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  
             }
            
             .profile img {
@@ -193,19 +193,25 @@
             }
             
             .repositories .card h3 {
-                font-size: 1rem;
+                font-size: 0.8rem;
             }
         }
         
         @media (max-width: 800px) {
             .layout {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
+                grid-template-rows: 1fr;
             }
             .profile {
                 border: 2px solid #5f5a60;  
                 border-radius: 8px;    
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);        
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* Center horizontally */
+                justify-content: center; /* Center vertically */
+                text-align: center;      
+                padding: 1rem        
             }
            
             .profile img {
@@ -219,73 +225,20 @@
 
             .profile p {
                 font-size: 1rem;
-                margin: 0.4px 0;
+                margin: 0.4rem 0;
             }
             
             .profile a {
                 font-size:1rem;
-                margin: 0.4px 0;            
+                margin: 0.4rem 0;            
             }
 
             .about,
             .repositories {
-                padding: 1rem;
-            }
-
-            .about .card,
-            .repositories .card {
-                padding: 1rem;
-            }
-            
-            .repositories .card h3 {
-                font-size: 1rem;
+                display: none; /* Hide these sections on smaller screens */
             }
         }
 
-        /* Large Phones and smaller tablets */
-        @media (max-width: 480px) {
-            .profile img {
-                width: 100px;
-                height: 100px;
-            }
-            .profile {
-                border: 2px solid #5f5a60;      
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);        
-            }
-
-            .profile h1 {
-                font-size: 1.2rem;
-            }
-
-            .profile p {
-                font-size: 0.9rem;
-                margin: 0.3px 0;
-            }
-            
-            .profile a {
-                font-size:0.9rem;
-                margin: 0.3px 0;            
-            }
-
-
-            .about .card,
-            .repositories .card {
-                padding: 0.8rem;
-            }
-
-            .about h2,
-            .about h3 {
-                font-size: 1.2rem;
-            }
-
-            .about a {
-                font-size: 0.9rem;
-            }
-
-            .repositories .card h3 {
-                font-size: 1rem;
-            }
-        }
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
