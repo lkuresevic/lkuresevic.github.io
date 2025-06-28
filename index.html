@@ -43,7 +43,13 @@
         }
 
         .about {
-            background-color: #1b1d1e;
+            background-color: rgba(27, 29, 30, 0.85);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .repositories {
+            background-color: rgba(27, 29, 30, 0.85);
             padding: 2rem;
             overflow-y: auto;
         }
@@ -100,12 +106,6 @@
         .profile p {
             margin: 0.5rem 0;
             color: #d3d0c8;
-        }
-
-        .repositories {
-            background-color: #1b1d1e;
-            padding: 2rem;
-            overflow-y: auto;
         }
 
         .repositories .card h3 {
@@ -204,7 +204,7 @@
             }
         }
 
-        #laser-canvas {
+        #binary-canvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -217,7 +217,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <canvas id="laser-canvas"></canvas>
+    <canvas id="binary-canvas"></canvas>
 
     <div class="layout">
         <div class="about">
@@ -278,56 +278,71 @@
                 });
         });
 
-        const canvas = document.getElementById('laser-canvas');
+        const canvas = document.getElementById('binary-canvas');
         const ctx = canvas.getContext('2d');
-        const colors = ['#f2777a', '#99cc99', '#6699cc', '#ffcc66'];
-        let lasers = [];
+        const colors = ['#f2777a', '#99cc99', '#6699cc', '#ffcc66', '#d3d0c8'];
+        const binaryChars = ['0', '1'];
+        let binaryElements = [];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            initBinaryElements();
         }
 
-        function randomLaser() {
-            return {
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                dx: (Math.random() - 0.5) * 3,
-                dy: (Math.random() - 0.5) * 3,
-                color: colors[Math.floor(Math.random() * colors.length)]
-            };
+        function initBinaryElements() {
+            binaryElements = [];
+            const fontSize = 16;
+            const columns = Math.floor(canvas.width / fontSize);
+            const rows = Math.floor(canvas.height / fontSize);
+            
+            for (let i = 0; i < columns; i++) {
+                for (let j = 0; j < rows; j++) {
+                    if (Math.random() > 0.7) { // Only populate 70% of positions
+                        binaryElements.push({
+                            x: i * fontSize,
+                            y: j * fontSize,
+                            char: binaryChars[Math.floor(Math.random() * binaryChars.length)],
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            speed: 0.5 + Math.random() * 2,
+                            opacity: 0.1 + Math.random() * 0.5
+                        });
+                    }
+                }
+            }
         }
 
-        function drawLasers() {
+        function drawBinary() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            lasers.forEach(l => {
-                ctx.beginPath();
-                ctx.strokeStyle = l.color;
-                ctx.lineWidth = 1.2;
-                ctx.moveTo(l.x, l.y);
-                ctx.lineTo(l.x + l.dx * 10, l.y + l.dy * 10);
-                ctx.stroke();
+            ctx.font = '16px Consolas, monospace';
+            
+            binaryElements.forEach(el => {
+                ctx.fillStyle = el.color;
+                ctx.globalAlpha = el.opacity;
+                ctx.fillText(el.char, el.x, el.y);
+                
+                // Update position
+                el.y += el.speed;
+                
+                // Reset if off screen
+                if (el.y > canvas.height) {
+                    el.y = 0;
+                    el.x = Math.random() * canvas.width;
+                    el.char = binaryChars[Math.floor(Math.random() * binaryChars.length)];
+                    el.color = colors[Math.floor(Math.random() * colors.length)];
+                }
             });
-        }
-
-        function updateLasers() {
-            lasers.forEach(l => {
-                l.x += l.dx;
-                l.y += l.dy;
-                if (l.x < 0 || l.x > canvas.width) l.dx *= -1;
-                if (l.y < 0 || l.y > canvas.height) l.dy *= -1;
-            });
+            
+            ctx.globalAlpha = 1;
         }
 
         function animate() {
-            updateLasers();
-            drawLasers();
+            drawBinary();
             requestAnimationFrame(animate);
         }
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-        lasers = Array.from({ length: 20 }, randomLaser);
         animate();
     </script>
 </body>
