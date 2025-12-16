@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luka Kurešević</title>
     <style>
+        /* Base styles */
         body {
             font-family: Consolas, 'Courier New', monospace;
             margin: 0;
@@ -13,25 +14,28 @@
             color: #d3d0c8;
         }
 
-        .about::-webkit-scrollbar, .repositories::-webkit-scrollbar {
+        /* Scrollbar hiding for 'about' and 'articles' (new right section) */
+        .about::-webkit-scrollbar, .articles::-webkit-scrollbar {
             display: none;
         }
 
-        .about, .repositories {
+        .about, .articles {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
+        /* Updated Layout Grid: 40% (About/Experience) | 20% (Profile) | 40% (Articles/Projects) */
         .layout {
             display: grid;
             grid-template-columns: 40% 20% 40%;
-            grid-template-rows: auto 1fr auto;
+            grid-template-rows: auto 1fr auto; /* Rows structure is still fine */
             gap: 0rem;
             height: 100vh;
             position: relative;
             z-index: 2;
         }
 
+        /* Profile section (center column) - no change needed */
         .profile {
             background-color: #282b2e;
             display: flex;
@@ -40,21 +44,28 @@
             justify-content: center;
             text-align: center;
             padding: 2rem;
+            grid-column: 2; /* Explicitly place in the second column */
+            grid-row: 1 / 4; /* Span all rows */
         }
 
+        /* Left section - now only contains 'About Me' and Experience */
         .about {
             background-color: rgba(27, 29, 30, 0.85);
             padding: 2rem;
             overflow-y: auto;
+            grid-column: 1; /* Place in the first column */
         }
 
-        .repositories {
+        /* Right section - now for Articles/Projects */
+        .articles { /* Renamed from .repositories */
             background-color: rgba(27, 29, 30, 0.85);
             padding: 2rem;
             overflow-y: auto;
+            grid-column: 3; /* Place in the third column */
         }
 
-        .about .card, .repositories .card {
+        /* Card styling - apply to both left and right section cards */
+        .about .card, .articles .card { /* Updated selector for .articles */
             background-color: #232526;
             border: 1px solid #5f5a60;
             border-radius: 8px;
@@ -65,29 +76,44 @@
             color: #d3d0c8;
         }
 
-        .about .card:hover, .repositories .card:hover {
+        .about .card:hover, .articles .card:hover { /* Updated selector for .articles */
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
         }
 
+        /* Typography for About/Experience (left section) */
         .about h2 {
-            color: #f2777a;
+            color: #f2777a; /* Title for 'About Me' */
         }
 
         .about h3 {
-            color: #99cc99;
+            color: #99cc99; /* Title for Experience */
         }
 
-        .about a, .profile a, .repositories .card a {
+        /* Typography for Articles/Projects (right section) */
+        .articles h2 {
+            color: #6699cc; /* Title for 'Articles/Projects' */
+        }
+
+        /* UPDATED: Article titles now match experience title color */
+        .articles .card h3 { 
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #99cc99; /* Changed from #ffcc66 to match experience title color */
+        }
+        
+        /* Link styling - apply to both sections and profile */
+        .about a, .profile a, .articles .card a { /* Updated selector for .articles */
             margin: 0.5rem 0;
             color: #6699cc;
             text-decoration: none;
         }
 
-        .about a:hover, .profile a:hover, .repositories .card a:hover {
+        .about a:hover, .profile a:hover, .articles .card a:hover { /* Updated selector for .articles */
             text-decoration: underline;
         }
 
+        /* Profile image and text styles */
         .profile img {
             width: 250px;
             height: 250px;
@@ -107,25 +133,22 @@
             margin: 0.5rem 0;
             color: #d3d0c8;
         }
-
-        .repositories .card h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #6699cc;
-        }
-
-        .repositories .card p {
+        
+        /* Styles for article/project metadata (e.g., stars) - minor adjustments needed */
+        .articles .card p {
             font-size: 0.9rem;
             color: #d3d0c8;
         }
 
-        .repositories .card .stars {
+        .articles .card .stars {
             font-size: 0.8rem;
-            color: #ffcc66;
+            color: #ffcc66; /* Star color is fine */
         }
 
+        /* Media Queries (adjusted to reflect new structure) */
+
         @media (max-width: 1800px) {
-            .repositories .card h3 {
+             .articles .card h3 {
                 font-size: 1rem;
             }
         }
@@ -150,16 +173,16 @@
             }
 
             .about,
-            .repositories {
+            .articles {
                 padding: 1rem;
             }
 
             .about .card,
-            .repositories .card {
+            .articles .card {
                 padding: 1rem;
             }
 
-            .repositories .card h3 {
+            .articles .card h3 {
                 font-size: 0.8rem;
             }
         }
@@ -178,6 +201,8 @@
                 align-items: center;
                 justify-content: center;
                 text-align: center;
+                grid-column: 1; /* Single column layout for mobile */
+                grid-row: 1;
             }
 
             .profile img {
@@ -199,11 +224,13 @@
                 margin: 0.4rem 0;
             }
 
-            .about, .repositories {
+            /* Hide side panels in mobile view as per original code, only showing profile */
+            .about, .articles {
                 display: none;
             }
         }
 
+        /* Canvas background - no change needed */
         #binary-canvas {
             position: fixed;
             top: 0;
@@ -227,21 +254,13 @@
                 <p>Broadly interested in how computing can be optimized in the post-Moore's law era (learning about electronic design automation, domain specific compilers, etc).</p>
             </div>
             <div class="card">
-                <h3>Microsoft</h3>
+                <h3>Microsoft Development Center Serbia</h3>
                 <a>Software Engineering Intern, November 2025 - March 2026</a>
-                <p>Upcoming.</p>
             </div>
             <div class="card">
                 <h3>Parallel Systems Architecture Lab, EPFL</h3>
                 <a>Research Intern, May 2025 - July 2025</a>
                 <p>Research and development of heuristics for addressing NP-hard problems in electronic design automation for FPGAs (specifically FPGA routing; construction of congestion aware Steiner minimal trees in graphs).</p>
-            </div>
-            <div class="card">
-                <h3>Performance comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
-                <a href="https://github.com/lkuresevic/urban_sound_classifier">(view repo)</a>
-                <p>Preprocessed audio samples from <em>UrbanSound8K</em>, representing them as <strong>Mel Spectrograms</strong> for machine learning purposes.</p>
-                <p>Conducted preliminary experiments on different <strong>ResNet (CNN)</strong> and <strong>LSTM</strong> architectures over a smaller number of epochs, with the goal of selecting candidates for further consideration.</p>
-                <p>In the final experiment round, performed <strong>10-fold validation</strong> over a larger number of epochs, evaluating selected candidates against each other.</p>
             </div>
         </div>
 
@@ -257,37 +276,43 @@
             <a href="https://www.linkedin.com/in/luka-kure%C5%A1evi%C4%87-4bb341339/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
         </div>
 
-        <div class="repositories" id="repo-container">
+        <div class="articles" id="articles-container">
+	    <div class="card">
+		<h3>Automatic Semantic Context Retrieval for Coding Agents</h3>
+		<a href="https://github.com/EjAjAj/Lazarus" target="_blank">(view repo)</a>
+		<p>An IDE plugin for automated retrieval of semantic context, aiming to optimize token consumption.</p>
+	    	<p class="stars">Hackathon Project</p>
+	    </div> 
+
+            <div class="card">
+                <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
+                <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
+                <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
+                <p class="stars">Coursework</p>
+            </div>
+
+            <div class="card">
+                <h3>An RSMT Construction Technique Based On GNN-Inspired Message Passing</h3>
+                <a href="https://github.com/lkuresevic/rsmt-pathfinder" target="_blank">(view repo)</a>
+                <p>Proposed an enhancement to a PathFinder inspired algorithm for constructing Steiner minimal trees on rectilinear
+graphs, introducing a message-passing mechanism to mitigate globally suboptimal choices during RSMT
+construction.</p>
+                <p class="stars">Coursework</p>
+            </div>
+
+            <div class="card">
+                <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
+                <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
+                <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
+                <p class="stars">Coursework</p>
+            </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const username = 'lkuresevic';
-            const repoContainer = document.getElementById('repo-container');
-
-            fetch(`https://api.github.com/users/${username}/repos`)
-                .then(response => response.json())
-                .then(repos => {
-                    repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-                    repos.forEach(repo => {
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        card.innerHTML = `
-                            <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-                            <p>${repo.description ? repo.description : 'No description available.'}</p>
-                            <p class="stars">⭐ ${repo.stargazers_count} Stars</p>
-                            <p>Last updated: ${new Date(repo.updated_at).toLocaleDateString()}</p>
-                        `;
-                        repoContainer.appendChild(card);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching repositories:', error);
-                    repoContainer.innerHTML = '<p>Failed to load repositories.</p>';
-                });
-        });
-
+        // Removed the GitHub scraping logic as requested.
+        
+        // --- Binary Rain Canvas Logic (Kept for visual effect) ---
         const canvas = document.getElementById('binary-canvas');
         const ctx = canvas.getContext('2d');
         const colors = ['#f2777a', '#99cc99', '#6699cc', '#ffcc66', '#d3d0c8'];
