@@ -56,7 +56,7 @@
             grid-column: 1; /* Place in the first column */
         }
 
-        /* Right section - now for Articles/Projects */
+        /* Right section - now for Publications/Projects */
         .articles { /* Renamed from .repositories */
             background-color: rgba(27, 29, 30, 0.85);
             padding: 2rem;
@@ -90,18 +90,91 @@
             color: #99cc99; /* Title for Experience */
         }
 
-        /* Typography for Articles/Projects (right section) */
+        /* Typography for Publications/Projects (right section) */
         .articles h2 {
-            color: #6699cc; /* Title for 'Articles/Projects' */
+            color: #6699cc; /* Title for 'Publications/Projects' */
         }
 
-        /* UPDATED: Article titles now match experience title color */
-        .articles .card h3 { 
+        /* Article/Publication titles match experience title color */
+        .articles .card h3 {
             margin-top: 0;
             font-size: 1.2rem;
-            color: #99cc99; /* Changed from #ffcc66 to match experience title color */
+            color: #99cc99; /* Matches experience title color */
         }
-        
+
+        /* Publication title a touch larger than project titles */
+        #publications-view .card h3 {
+            font-size: 1.5rem;
+        }
+
+        /* Links row (DOI / repo / paper) separated from the text above */
+        .articles .card .pub-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-top: 1.1rem;
+        }
+
+        .articles .card .pub-links a {
+            margin: 0;
+        }
+
+        /* Toggle control for switching between Publications and Projects */
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .toggle-btn {
+            font-family: inherit;
+            font-size: 1rem;
+            background-color: transparent;
+            color: #6699cc;
+            border: 1px solid #5f5a60;
+            border-radius: 8px;
+            padding: 0.5rem 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .toggle-btn:hover {
+            border-color: #6699cc;
+        }
+
+        .toggle-btn.active {
+            background-color: #232526;
+            color: #6699cc;
+            border-color: #6699cc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hidden view */
+        .view[hidden] {
+            display: none;
+        }
+
+        /* Author list for publications, with the owner's name highlighted */
+        .articles .card .authors {
+            font-size: 0.9rem;
+            color: #d3d0c8;
+            line-height: 1.5;
+            margin: 0.5rem 0;
+        }
+
+        .articles .card .authors .me {
+            color: #f2777a;
+            font-weight: bold;
+        }
+
+        /* Conference/journal line */
+        .articles .card .venue {
+            font-size: 0.75rem;
+            color: #ffcc66;
+            font-style: italic;
+            margin: 0.5rem 0 0;
+        }
+
         /* Link styling - apply to both sections and profile */
         .about a, .profile a, .articles .card a { /* Updated selector for .articles */
             margin: 0.5rem 0;
@@ -133,7 +206,7 @@
             margin: 0.5rem 0;
             color: #d3d0c8;
         }
-        
+
         /* Styles for article/project metadata (e.g., stars) - minor adjustments needed */
         .articles .card p {
             font-size: 0.9rem;
@@ -150,6 +223,9 @@
         @media (max-width: 1800px) {
              .articles .card h3 {
                 font-size: 1rem;
+            }
+             #publications-view .card h3 {
+                font-size: 1.25rem;
             }
         }
 
@@ -184,6 +260,15 @@
 
             .articles .card h3 {
                 font-size: 0.8rem;
+            }
+
+            #publications-view .card h3 {
+                font-size: 1rem;
+            }
+
+            .toggle-btn {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
             }
         }
 
@@ -277,41 +362,76 @@
         </div>
 
         <div class="articles" id="articles-container">
-	    <div class="card">
-		<h3>Automatic Semantic Context Retrieval for Coding Agents</h3>
-		<a href="https://github.com/EjAjAj/Lazarus" target="_blank">(view repo)</a>
-		<p>An IDE plugin for automated retrieval of semantic context, aiming to optimize token consumption.</p>
-	    	<p class="stars">Hackathon Project</p>
-	    </div> 
-
-            <div class="card">
-                <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
-                <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
-                <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
-                <p class="stars">Coursework</p>
+            <div class="view-toggle">
+                <button class="toggle-btn active" data-view="publications">Publications</button>
+                <button class="toggle-btn" data-view="projects">Projects</button>
             </div>
 
-            <div class="card">
-                <h3>An RSMT Construction Technique Based On GNN-Inspired Message Passing</h3>
-                <a href="https://github.com/lkuresevic/rsmt-pathfinder" target="_blank">(view repo)</a>
-                <p>Proposed an enhancement to a PathFinder inspired algorithm for constructing Steiner minimal trees on rectilinear
+            <!-- Publications (default) -->
+            <div class="view" id="publications-view">
+                <div class="card">
+                    <h3>PathSteiner: Improving PathFinder with Quasi-Optimal Steiner-Tree Initialization</h3>
+                    <p class="authors">Shashwat Shrivastava, <span class="me">Luka Kurešević</span>, Alexandros Poupakis, Chirag Ravishankar, Dinesh Gaitonde, Stefan Nikolić, Mirjana Stojilović</p>
+                    <p class="venue">Proceedings of the IEEE Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM), 2026</p>
+                    <div class="pub-links">
+                        <a href="https://doi.org/TBD" target="_blank">DOI</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects -->
+            <div class="view" id="projects-view" hidden>
+                <div class="card">
+                    <h3>Automatic Semantic Context Retrieval for Coding Agents</h3>
+                    <a href="https://github.com/EjAjAj/Lazarus" target="_blank">(view repo)</a>
+                    <p>An IDE plugin for automated retrieval of semantic context, aiming to optimize token consumption.</p>
+                    <p class="stars">Hackathon Project</p>
+                </div>
+
+                <div class="card">
+                    <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
+                    <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
+                    <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
+                    <p class="stars">Coursework</p>
+                </div>
+
+                <div class="card">
+                    <h3>An RSMT Construction Technique Based On GNN-Inspired Message Passing</h3>
+                    <a href="https://github.com/lkuresevic/rsmt-pathfinder" target="_blank">(view repo)</a>
+                    <p>Proposed an enhancement to a PathFinder inspired algorithm for constructing Steiner minimal trees on rectilinear
 graphs, introducing a message-passing mechanism to mitigate globally suboptimal choices during RSMT
 construction.</p>
-                <p class="stars">Coursework</p>
-            </div>
+                    <p class="stars">Coursework</p>
+                </div>
 
-            <div class="card">
-                <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
-                <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
-                <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
-                <p class="stars">Coursework</p>
+                <div class="card">
+                    <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
+                    <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
+                    <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
+                    <p class="stars">Coursework</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Removed the GitHub scraping logic as requested.
-        
+        // --- Publications / Projects toggle ---
+        const toggleButtons = document.querySelectorAll('.toggle-btn');
+        const views = {
+            publications: document.getElementById('publications-view'),
+            projects: document.getElementById('projects-view')
+        };
+
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selected = btn.dataset.view;
+                toggleButtons.forEach(b => b.classList.toggle('active', b === btn));
+                Object.keys(views).forEach(key => {
+                    views[key].hidden = (key !== selected);
+                });
+            });
+        });
+
         // --- Binary Rain Canvas Logic (Kept for visual effect) ---
         const canvas = document.getElementById('binary-canvas');
         const ctx = canvas.getContext('2d');
@@ -330,7 +450,7 @@ construction.</p>
             const fontSize = 16;
             const columns = Math.floor(canvas.width / fontSize);
             const rows = Math.floor(canvas.height / fontSize);
-            
+
             for (let i = 0; i < columns; i++) {
                 for (let j = 0; j < rows; j++) {
                     if (Math.random() > 0.7) { // Only populate 70% of positions
@@ -350,15 +470,15 @@ construction.</p>
         function drawBinary() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.font = '16px Consolas, monospace';
-            
+
             binaryElements.forEach(el => {
                 ctx.fillStyle = el.color;
                 ctx.globalAlpha = el.opacity;
                 ctx.fillText(el.char, el.x, el.y);
-                
+
                 // Update position
                 el.y += el.speed;
-                
+
                 // Reset if off screen
                 if (el.y > canvas.height) {
                     el.y = 0;
@@ -367,7 +487,7 @@ construction.</p>
                     el.color = colors[Math.floor(Math.random() * colors.length)];
                 }
             });
-            
+
             ctx.globalAlpha = 1;
         }
 
