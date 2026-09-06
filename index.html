@@ -1,504 +1,530 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luka Kurešević</title>
-    <style>
-        /* Base styles */
-        body {
-            font-family: Consolas, 'Courier New', monospace;
-            margin: 0;
-            padding: 0;
-            background-color: #1b1d1e;
-            color: #d3d0c8;
-        }
-
-        /* Scrollbar hiding for 'about' and 'articles' (new right section) */
-        .about::-webkit-scrollbar, .articles::-webkit-scrollbar {
-            display: none;
-        }
-
-        .about, .articles {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Updated Layout Grid: 40% (About/Experience) | 20% (Profile) | 40% (Articles/Projects) */
-        .layout {
-            display: grid;
-            grid-template-columns: 40% 20% 40%;
-            grid-template-rows: auto 1fr auto; /* Rows structure is still fine */
-            gap: 0rem;
-            height: 100vh;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Profile section (center column) - no change needed */
-        .profile {
-            background-color: #282b2e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-            grid-column: 2; /* Explicitly place in the second column */
-            grid-row: 1 / 4; /* Span all rows */
-        }
-
-        /* Left section - now only contains 'About Me' and Experience */
-        .about {
-            background-color: rgba(27, 29, 30, 0.85);
-            padding: 2rem;
-            overflow-y: auto;
-            grid-column: 1; /* Place in the first column */
-        }
-
-        /* Right section - now for Publications/Projects */
-        .articles { /* Renamed from .repositories */
-            background-color: rgba(27, 29, 30, 0.85);
-            padding: 2rem;
-            overflow-y: auto;
-            grid-column: 3; /* Place in the third column */
-        }
-
-        /* Card styling - apply to both left and right section cards */
-        .about .card, .articles .card { /* Updated selector for .articles */
-            background-color: #232526;
-            border: 1px solid #5f5a60;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            color: #d3d0c8;
-        }
-
-        .about .card:hover, .articles .card:hover { /* Updated selector for .articles */
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Typography for About/Experience (left section) */
-        .about h2 {
-            color: #f2777a; /* Title for 'About Me' */
-        }
-
-        .about h3 {
-            color: #99cc99; /* Title for Experience */
-        }
-
-        /* Typography for Publications/Projects (right section) */
-        .articles h2 {
-            color: #6699cc; /* Title for 'Publications/Projects' */
-        }
-
-        /* Article/Publication titles match experience title color */
-        .articles .card h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #99cc99; /* Matches experience title color */
-        }
-
-        /* Publication title a touch larger than project titles */
-        #publications-view .card h3 {
-            font-size: 1.5rem;
-        }
-
-        /* Links row (DOI / repo / paper) separated from the text above */
-        .articles .card .pub-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.25rem;
-            margin-top: 1.1rem;
-        }
-
-        .articles .card .pub-links a {
-            margin: 0;
-        }
-
-        /* Toggle control for switching between Publications and Projects */
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .toggle-btn {
-            font-family: inherit;
-            font-size: 1rem;
-            background-color: transparent;
-            color: #6699cc;
-            border: 1px solid #5f5a60;
-            border-radius: 8px;
-            padding: 0.5rem 1.1rem;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-        }
-
-        .toggle-btn:hover {
-            border-color: #6699cc;
-        }
-
-        .toggle-btn.active {
-            background-color: #232526;
-            color: #6699cc;
-            border-color: #6699cc;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Hidden view */
-        .view[hidden] {
-            display: none;
-        }
-
-        /* Author list for publications, with the owner's name highlighted */
-        .articles .card .authors {
-            font-size: 0.9rem;
-            color: #d3d0c8;
-            line-height: 1.5;
-            margin: 0.5rem 0;
-        }
-
-        .articles .card .authors .me {
-            color: #f2777a;
-            font-weight: bold;
-        }
-
-        /* Conference/journal line */
-        .articles .card .venue {
-            font-size: 0.75rem;
-            color: #ffcc66;
-            font-style: italic;
-            margin: 0.5rem 0 0;
-        }
-
-        /* Link styling - apply to both sections and profile */
-        .about a, .profile a, .articles .card a { /* Updated selector for .articles */
-            margin: 0.5rem 0;
-            color: #6699cc;
-            text-decoration: none;
-        }
-
-        .about a:hover, .profile a:hover, .articles .card a:hover { /* Updated selector for .articles */
-            text-decoration: underline;
-        }
-
-        /* Profile image and text styles */
-        .profile img {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            border: 4px solid #1b1d1e;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            object-fit: cover;
-            margin-bottom: 1rem;
-        }
-
-        .profile h1 {
-            margin: 0.5rem 0;
-            color: #f2777a;
-        }
-
-        .profile p {
-            margin: 0.5rem 0;
-            color: #d3d0c8;
-        }
-
-        /* Styles for article/project metadata (e.g., stars) - minor adjustments needed */
-        .articles .card p {
-            font-size: 0.9rem;
-            color: #d3d0c8;
-        }
-
-        .articles .card .stars {
-            font-size: 0.8rem;
-            color: #ffcc66; /* Star color is fine */
-        }
-
-        /* Media Queries (adjusted to reflect new structure) */
-
-        @media (max-width: 1800px) {
-             .articles .card h3 {
-                font-size: 1rem;
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Luka Kurešević</title>
+        <style>
+            /* Base styles */
+            body {
+                font-family: Consolas, 'Courier New', monospace;
+                margin: 0;
+                padding: 0;
+                background-color: #1b1d1e;
+                color: #d3d0c8;
             }
-             #publications-view .card h3 {
-                font-size: 1.25rem;
-            }
-        }
 
-        @media (max-width: 1300px) {
+            /* Scrollbar hiding for 'about' and 'articles' (new right section) */
+            .about::-webkit-scrollbar, .articles::-webkit-scrollbar {
+                display: none;
+            }
+
+            .about, .articles {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            /* Updated Layout Grid: 40% (About/Experience) | 20% (Profile) | 40% (Articles/Projects) */
             .layout {
+                display: grid;
                 grid-template-columns: 40% 20% 40%;
-                grid-template-rows: auto 1fr auto;
+                grid-template-rows: auto 1fr auto; /* Rows structure is still fine */
+                gap: 0rem;
+                height: 100vh;
+                position: relative;
+                z-index: 2;
             }
 
-            .profile img {
-                width: 100px;
-                height: 100px;
-            }
-
-            .profile h1 {
-                font-size: 1.5rem;
-            }
-
-            .profile p {
-                font-size: 1rem;
-            }
-
-            .about,
-            .articles {
-                padding: 1rem;
-            }
-
-            .about .card,
-            .articles .card {
-                padding: 1rem;
-            }
-
-            .articles .card h3 {
-                font-size: 0.8rem;
-            }
-
-            #publications-view .card h3 {
-                font-size: 1rem;
-            }
-
-            .toggle-btn {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.8rem;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr;
-            }
-
+            /* Profile section (center column) - no change needed */
             .profile {
-                padding: 1rem;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                background-color: #282b2e;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 text-align: center;
-                grid-column: 1; /* Single column layout for mobile */
-                grid-row: 1;
+                padding: 2rem;
+                grid-column: 2; /* Explicitly place in the second column */
+                grid-row: 1 / 4; /* Span all rows */
             }
 
-            .profile img {
-                width: 100px;
-                height: 100px;
+            /* Left section - now only contains 'About Me' and Experience */
+            .about {
+                background-color: rgba(27, 29, 30, 0.85);
+                padding: 2rem;
+                overflow-y: auto;
+                grid-column: 1; /* Place in the first column */
+                grid-row: 1 / 4; /* Span all rows so the background always fills the full screen height */
             }
 
-            .profile h1 {
+            /* Right section - now for Publications/Projects */
+            .articles { /* Renamed from .repositories */
+                background-color: rgba(27, 29, 30, 0.85);
+                padding: 2rem;
+                overflow-y: auto;
+                grid-column: 3; /* Place in the third column */
+                grid-row: 1 / 4; /* Span all rows so the background always fills the full screen height */
+            }
+
+            /* Card styling - apply to both left and right section cards */
+            .about .card, .articles .card { /* Updated selector for .articles */
+                background-color: #232526;
+                border: 1px solid #5f5a60;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                transition: transform 0.2s, box-shadow 0.2s;
+                color: #d3d0c8;
+            }
+
+            .about .card:hover, .articles .card:hover { /* Updated selector for .articles */
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Typography for About/Experience (left section) */
+            .about h2 {
+                color: #f2777a; /* Title for 'About Me' */
+            }
+
+            .about h3 {
+                color: #99cc99; /* Title for Experience */
+            }
+
+            /* Typography for Publications/Projects (right section) */
+            .articles h2 {
+                color: #6699cc; /* Title for 'Publications/Projects' */
+            }
+
+            /* Article/Publication titles match experience title color */
+            .articles .card h3 {
+                margin-top: 0;
+                font-size: 1.2rem;
+                color: #99cc99; /* Matches experience title color */
+            }
+
+            /* Publication title a touch larger than project titles */
+            #publications-view .card h3 {
                 font-size: 1.5rem;
             }
 
-            .profile p {
-                font-size: 1rem;
-                margin: 0.4rem 0;
+            /* Links row (DOI / repo / paper) separated from the text above */
+            .articles .card .pub-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.25rem;
+                margin-top: 1.1rem;
             }
 
-            .profile a {
-                font-size: 1rem;
-                margin: 0.4rem 0;
+            .articles .card .pub-links a {
+                margin: 0;
             }
 
-            /* Hide side panels in mobile view as per original code, only showing profile */
-            .about, .articles {
+            /* Toggle control for switching between Publications and Projects */
+            .view-toggle {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .toggle-btn {
+                font-family: inherit;
+                font-size: 1rem;
+                background-color: transparent;
+                color: #6699cc;
+                border: 1px solid #5f5a60;
+                border-radius: 8px;
+                padding: 0.5rem 1.1rem;
+                cursor: pointer;
+                transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+            }
+
+            .toggle-btn:hover {
+                border-color: #6699cc;
+            }
+
+            .toggle-btn.active {
+                background-color: #232526;
+                color: #6699cc;
+                border-color: #6699cc;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Hidden view */
+            .view[hidden] {
                 display: none;
             }
-        }
 
-        /* Canvas background - no change needed */
-        #binary-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-    </style>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <canvas id="binary-canvas"></canvas>
+            /* Author list for publications, with the owner's name highlighted */
+            .articles .card .authors {
+                font-size: 0.9rem;
+                color: #d3d0c8;
+                line-height: 1.5;
+                margin: 0.5rem 0;
+            }
 
-    <div class="layout">
-        <div class="about">
-            <div class="card">
-                <h2>About Me</h2>
-                <p>Currently pursuing a BSc in Computer Science at the <i>Faculty of Sciences, University of Novi Sad.</i></p>
-                <p>Broadly interested in how computing can be optimized in the post-Moore's law era (learning about electronic design automation, domain specific compilers, etc).</p>
-            </div>
-            <div class="card">
-                <h3>Microsoft Development Center Serbia</h3>
-                <a>Software Engineering Intern, November 2025 - March 2026</a>
-            </div>
-            <div class="card">
-                <h3>Parallel Systems Architecture Lab, EPFL</h3>
-                <a>Research Intern, May 2025 - July 2025</a>
-                <p>Research and development of heuristics for addressing NP-hard problems in electronic design automation for FPGAs (specifically FPGA routing; construction of congestion aware Steiner minimal trees in graphs).</p>
-            </div>
-        </div>
+            .articles .card .authors .me {
+                color: #f2777a;
+                font-weight: bold;
+            }
 
-        <div class="profile">
-            <img src="profile.jpeg" alt="Luka Kurešević">
-            <h1>Luka Kurešević</h1>
-            <p>Computer Science, University of Novi Sad</p>
-            <p>(BSc, 2023 - 2026*)</p>
-            <a href="CV_Luka_Kurešević.pdf" target="_blank"><i class="fas fa-file-alt"></i> CV</a>
-            <br>
-            <a href="https://github.com/lkuresevic" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-            <br>
-            <a href="https://www.linkedin.com/in/luka-kure%C5%A1evi%C4%87-4bb341339/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
-        </div>
+            /* Conference/journal line */
+            .articles .card .venue {
+                font-size: 0.75rem;
+                color: #ffcc66;
+                font-style: italic;
+                margin: 0.5rem 0 0;
+            }
 
-        <div class="articles" id="articles-container">
-            <div class="view-toggle">
-                <button class="toggle-btn active" data-view="publications">Publications</button>
-                <button class="toggle-btn" data-view="projects">Projects</button>
-            </div>
+            /* Award year line */
+            .articles .card .award-year {
+                font-size: 0.85rem;
+                color: #6699cc;
+                font-weight: bold;
+                margin: 0.5rem 0;
+            }
 
-            <!-- Publications (default) -->
-            <div class="view" id="publications-view">
+            /* Link styling - apply to both sections and profile */
+            .about a, .profile a, .articles .card a { /* Updated selector for .articles */
+                margin: 0.5rem 0;
+                color: #6699cc;
+                text-decoration: none;
+            }
+
+            .about a:hover, .profile a:hover, .articles .card a:hover { /* Updated selector for .articles */
+                text-decoration: underline;
+            }
+
+            /* Profile image and text styles */
+            .profile img {
+                width: 250px;
+                height: 250px;
+                border-radius: 50%;
+                border: 4px solid #1b1d1e;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                object-fit: cover;
+                margin-bottom: 1rem;
+            }
+
+            .profile h1 {
+                margin: 0.5rem 0;
+                color: #f2777a;
+            }
+
+            .profile p {
+                margin: 0.5rem 0;
+                color: #d3d0c8;
+            }
+
+            /* Styles for article/project metadata (e.g., stars) - minor adjustments needed */
+            .articles .card p {
+                font-size: 0.9rem;
+                color: #d3d0c8;
+            }
+
+            .articles .card .stars {
+                font-size: 0.8rem;
+                color: #ffcc66; /* Star color is fine */
+            }
+
+            /* Media Queries (adjusted to reflect new structure) */
+
+            @media (max-width: 1800px) {
+                .articles .card h3 {
+                    font-size: 1rem;
+                }
+                #publications-view .card h3 {
+                    font-size: 1.25rem;
+                }
+            }
+
+            @media (max-width: 1300px) {
+                .layout {
+                    grid-template-columns: 40% 20% 40%;
+                    grid-template-rows: auto 1fr auto;
+                }
+
+                .profile img {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .profile h1 {
+                    font-size: 1.5rem;
+                }
+
+                .profile p {
+                    font-size: 1rem;
+                }
+
+                .about,
+                .articles {
+                    padding: 1rem;
+                }
+
+                .about .card,
+                .articles .card {
+                    padding: 1rem;
+                }
+
+                .articles .card h3 {
+                    font-size: 0.8rem;
+                }
+
+                #publications-view .card h3 {
+                    font-size: 1rem;
+                }
+
+                .toggle-btn {
+                    font-size: 0.85rem;
+                    padding: 0.4rem 0.8rem;
+                }
+            }
+
+            @media (max-width: 800px) {
+                .layout {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: 1fr;
+                }
+
+                .profile {
+                    padding: 1rem;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    grid-column: 1; /* Single column layout for mobile */
+                    grid-row: 1;
+                }
+
+                .profile img {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .profile h1 {
+                    font-size: 1.5rem;
+                }
+
+                .profile p {
+                    font-size: 1rem;
+                    margin: 0.4rem 0;
+                }
+
+                .profile a {
+                    font-size: 1rem;
+                    margin: 0.4rem 0;
+                }
+
+                /* Hide side panels in mobile view as per original code, only showing profile */
+                .about, .articles {
+                    display: none;
+                }
+            }
+
+            /* Canvas background - no change needed */
+            #binary-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+        </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <canvas id="binary-canvas"></canvas>
+
+        <div class="layout">
+            <div class="about">
                 <div class="card">
-                    <h3>PathSteiner: Improving PathFinder with Quasi-Optimal Steiner-Tree Initialization</h3>
-                    <p class="authors">Shashwat Shrivastava, <span class="me">Luka Kurešević</span>, Alexandros Poupakis, Chirag Ravishankar, Dinesh Gaitonde, Stefan Nikolić, Mirjana Stojilović</p>
-                    <p class="venue">Proceedings of the IEEE Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM), 2026</p>
-                    <div class="pub-links">
-                        <a href="https://doi.org/TBD" target="_blank">DOI</a>
+                    <h2>About Me</h2>
+                    <p>Currently pursuing a MSc in Computer Science at <i>EPFL</i> and working as a Research Assistant at <i>PARSA</i>.</p>
+                </div>
+                <div class="card">
+                    <h3>Parallel Systems Architecture Lab, EPFL</h3>
+                    <a>Research Assistant, September 2026 - </a>
+                </div>
+                <div class="card">
+                    <h3>Microsoft Development Center Serbia</h3>
+                    <a>Software Engineering Intern, November 2025 - March 2026</a>
+                </div>
+                <div class="card">
+                    <h3>Parallel Systems Architecture Lab, EPFL</h3>
+                    <a>Research Intern, May 2025 - July 2025</a>
+                    <p>Research and development of heuristics for addressing NP-hard problems in electronic design automation for FPGAs (specifically FPGA routing; construction of congestion aware Steiner minimal trees in graphs).</p>
+                </div>
+            </div>
+
+            <div class="profile">
+                <img src="profile.jpeg" alt="Luka Kurešević">
+                <h1>Luka Kurešević</h1>
+                <p>Computer Science, EPFL</p>
+                <p>(MSc, 2026 - )</p>
+                <p4></p4>
+                <p>Computer Science, University of Novi Sad</p>
+                <p>(BSc, 2023 - 2026)</p>
+                <a href="CV_Luka_Kurešević.pdf" target="_blank"><i class="fas fa-file-alt"></i> CV</a>
+                <br>
+                <a href="https://github.com/lkuresevic" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <br>
+                <a href="https://www.linkedin.com/in/luka-kure%C5%A1evi%C4%87-4bb341339/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            </div>
+
+            <div class="articles" id="articles-container">
+                <div class="view-toggle">
+                    <button class="toggle-btn active" data-view="publications">Publications</button>
+                    <button class="toggle-btn" data-view="projects">Projects</button>
+                    <button class="toggle-btn" data-view="awards">Awards</button>
+                </div>
+
+                <!-- Publications (default) -->
+                <div class="view" id="publications-view">
+                    <div class="card">
+                        <h3>PathSteiner: Improving PathFinder with Quasi-Optimal Steiner-Tree Initialization</h3>
+                        <p class="authors">Shashwat Shrivastava, <span class="me">Luka Kurešević</span>, Alexandros Poupakis, Chirag Ravishankar, Dinesh Gaitonde, Stefan Nikolić, Mirjana Stojilović</p>
+                        <p class="venue">Proceedings of the IEEE Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM), 2026</p>
+                        <div class="pub-links">
+                            <a href="https://doi.org/TBD" target="_blank">DOI</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects -->
+                <div class="view" id="projects-view" hidden>
+                    <div class="card">
+                        <h3>Agentic Timing Closure for FPGAs</h3>
+                        <a href="https://github.com/lkuresevic/fpl26_optimization_contest" target="_blank">(view repo)</a>
+                        <p>As part of team <b style="color: #f2777a">Novi CAD</b>, I participated in the <b style="color: #99cc99">Agentic FPGA Backend Optimization Competition</b> hosted at the FPL'26 conference. The challenge was as follows:</p>
+                        <p>Given a fully placed and routed design checkpoint (DCP), create a new DCP that improves its maximum clock frequency (Fmax) as much as possible while maintaining logical equivalence and staying fully placed and routed.</p>
+                        <p>We placed ? out of 90+ registered teams and won an <b style="color: #99cc99">honorable mention</b></p>
+                        <p class="stars">Agentic FPGA Optimization Contest @ FPL'26</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
+                        <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
+                        <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
+                        <p class="stars">Coursework</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
+                        <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
+                        <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
+                        <p class="stars">Coursework</p>
+                    </div>
+                </div>
+
+                <!-- Awards -->
+                <div class="view" id="awards-view" hidden>
+                    <div class="card">
+                        <h3>IC Master Research Scholarship</h3>
+                        <p class="venue">School of Computer and Communication Sciences, EPFL</p>
+                        <p class="award-year">2026</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Honorable Mention</h3>
+                        <p class="venue">Agentic FPGA Backend Optimization Competition @ FPL'26</p>
+                        <p class="award-year">2026</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Projects -->
-            <div class="view" id="projects-view" hidden>
-                <div class="card">
-                    <h3>Automatic Semantic Context Retrieval for Coding Agents</h3>
-                    <a href="https://github.com/EjAjAj/Lazarus" target="_blank">(view repo)</a>
-                    <p>An IDE plugin for automated retrieval of semantic context, aiming to optimize token consumption.</p>
-                    <p class="stars">Hackathon Project</p>
-                </div>
-
-                <div class="card">
-                    <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
-                    <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
-                    <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
-                    <p class="stars">Coursework</p>
-                </div>
-
-                <div class="card">
-                    <h3>An RSMT Construction Technique Based On GNN-Inspired Message Passing</h3>
-                    <a href="https://github.com/lkuresevic/rsmt-pathfinder" target="_blank">(view repo)</a>
-                    <p>Proposed an enhancement to a PathFinder inspired algorithm for constructing Steiner minimal trees on rectilinear
-graphs, introducing a message-passing mechanism to mitigate globally suboptimal choices during RSMT
-construction.</p>
-                    <p class="stars">Coursework</p>
-                </div>
-
-                <div class="card">
-                    <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
-                    <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
-                    <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
-                    <p class="stars">Coursework</p>
-                </div>
-            </div>
         </div>
-    </div>
 
-    <script>
-        // --- Publications / Projects toggle ---
-        const toggleButtons = document.querySelectorAll('.toggle-btn');
-        const views = {
-            publications: document.getElementById('publications-view'),
-            projects: document.getElementById('projects-view')
-        };
+        <script>
+            // --- Publications / Projects / Awards toggle ---
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            const views = {
+                publications: document.getElementById('publications-view'),
+                projects: document.getElementById('projects-view'),
+                awards: document.getElementById('awards-view')
+            };
 
-        toggleButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const selected = btn.dataset.view;
-                toggleButtons.forEach(b => b.classList.toggle('active', b === btn));
-                Object.keys(views).forEach(key => {
-                    views[key].hidden = (key !== selected);
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selected = btn.dataset.view;
+                    toggleButtons.forEach(b => b.classList.toggle('active', b === btn));
+                    Object.keys(views).forEach(key => {
+                        views[key].hidden = (key !== selected);
+                    });
                 });
             });
-        });
 
-        // --- Binary Rain Canvas Logic (Kept for visual effect) ---
-        const canvas = document.getElementById('binary-canvas');
-        const ctx = canvas.getContext('2d');
-        const colors = ['#f2777a', '#99cc99', '#6699cc', '#ffcc66', '#d3d0c8'];
-        const binaryChars = ['0', '1'];
-        let binaryElements = [];
+            // --- Binary Rain Canvas Logic (Kept for visual effect) ---
+            const canvas = document.getElementById('binary-canvas');
+            const ctx = canvas.getContext('2d');
+            const colors = ['#f2777a', '#99cc99', '#6699cc', '#ffcc66', '#d3d0c8'];
+            const binaryChars = ['0', '1'];
+            let binaryElements = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initBinaryElements();
-        }
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initBinaryElements();
+            }
 
-        function initBinaryElements() {
-            binaryElements = [];
-            const fontSize = 16;
-            const columns = Math.floor(canvas.width / fontSize);
-            const rows = Math.floor(canvas.height / fontSize);
+            function initBinaryElements() {
+                binaryElements = [];
+                const fontSize = 16;
+                const columns = Math.floor(canvas.width / fontSize);
+                const rows = Math.floor(canvas.height / fontSize);
 
-            for (let i = 0; i < columns; i++) {
-                for (let j = 0; j < rows; j++) {
-                    if (Math.random() > 0.7) { // Only populate 70% of positions
-                        binaryElements.push({
-                            x: i * fontSize,
-                            y: j * fontSize,
-                            char: binaryChars[Math.floor(Math.random() * binaryChars.length)],
-                            color: colors[Math.floor(Math.random() * colors.length)],
-                            speed: 0.5 + Math.random() * 2,
-                            opacity: 0.1 + Math.random() * 0.5
-                        });
+                for (let i = 0; i < columns; i++) {
+                    for (let j = 0; j < rows; j++) {
+                        if (Math.random() > 0.7) { // Only populate 70% of positions
+                            binaryElements.push({
+                                x: i * fontSize,
+                                y: j * fontSize,
+                                char: binaryChars[Math.floor(Math.random() * binaryChars.length)],
+                                color: colors[Math.floor(Math.random() * colors.length)],
+                                speed: 0.5 + Math.random() * 2,
+                                opacity: 0.1 + Math.random() * 0.5
+                            });
+                        }
                     }
                 }
             }
-        }
 
-        function drawBinary() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = '16px Consolas, monospace';
+            function drawBinary() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '16px Consolas, monospace';
 
-            binaryElements.forEach(el => {
-                ctx.fillStyle = el.color;
-                ctx.globalAlpha = el.opacity;
-                ctx.fillText(el.char, el.x, el.y);
+                binaryElements.forEach(el => {
+                    ctx.fillStyle = el.color;
+                    ctx.globalAlpha = el.opacity;
+                    ctx.fillText(el.char, el.x, el.y);
 
-                // Update position
-                el.y += el.speed;
+                    // Update position
+                    el.y += el.speed;
 
-                // Reset if off screen
-                if (el.y > canvas.height) {
-                    el.y = 0;
-                    el.x = Math.random() * canvas.width;
-                    el.char = binaryChars[Math.floor(Math.random() * binaryChars.length)];
-                    el.color = colors[Math.floor(Math.random() * colors.length)];
-                }
-            });
+                    // Reset if off screen
+                    if (el.y > canvas.height) {
+                        el.y = 0;
+                        el.x = Math.random() * canvas.width;
+                        el.char = binaryChars[Math.floor(Math.random() * binaryChars.length)];
+                        el.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+                });
 
-            ctx.globalAlpha = 1;
-        }
+                ctx.globalAlpha = 1;
+            }
 
-        function animate() {
-            drawBinary();
-            requestAnimationFrame(animate);
-        }
+            function animate() {
+                drawBinary();
+                requestAnimationFrame(animate);
+            }
 
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        animate();
-    </script>
-</body>
-</html>
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animate();
+        </script>
+    </body>
+    </html>
