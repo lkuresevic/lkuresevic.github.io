@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Luka Kurešević</title>
+        <style>
+            /* Base styles */
+            body {
+                font-family: Consolas, 'Courier New', monospace;
+                margin: 0;
+                padding: 0;
+                background-color: #141b1a;
+                color: #e2d8c3;
+            }
+
+            /* Background photo - sits beneath the binary rain and the darkened side panels */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                background: url("spens_novi_sad_micony.jpg") center / cover no-repeat;
+                pointer-events: none;
+            }
+
+            /* Scrollbar hiding for 'about' and 'articles' (new right section) */
+            .about::-webkit-scrollbar, .articles::-webkit-scrollbar {
+                display: none;
+            }
+
+            .about, .articles {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            /* Updated Layout Grid: 40% (About/Experience) | 20% (Profile) | 40% (Articles/Projects) */
+            .layout {
+                display: grid;
+                grid-template-columns: 40% 20% 40%;
+                grid-template-rows: auto 1fr auto; /* Rows structure is still fine */
+                gap: 0rem;
+                height: 100vh;
+                position: relative;
+                z-index: 2;
+            }
+
+            /* Profile section (center column) - no change needed */
+            .profile {
+                /* Same tint the cards end up with over the darkened side panels */
+                background-color: rgba(20, 28, 27, 0.94);
+                border-left: 1px solid #4b5a54;
+                border-right: 1px solid #4b5a54;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 2rem;
+                grid-column: 2; /* Explicitly place in the second column */
+                grid-row: 1 / 4; /* Span all rows */
+                position: relative; /* Anchor for the photo credit */
+            }
+
+            /* Background photo credit, pinned to the very bottom of the page */
+            .profile .photo-credit {
+                position: absolute;
+                bottom: 0.6rem;
+                left: 0;
+                right: 0;
+                margin: 0;
+                font-size: 0.7rem;
+                opacity: 0.45;
+                transition: opacity 0.2s;
+            }
+
+            .profile .photo-credit:hover {
+                opacity: 0.9;
+            }
+
+            /* Left section - now only contains 'About Me' and Experience */
+            .about {
+                background-color: rgba(20, 27, 26, 0.8);
+                padding: 2rem;
+                overflow-y: auto;
+                grid-column: 1; /* Place in the first column */
+                grid-row: 1 / 4; /* Span all rows so the background always fills the full screen height */
+            }
+
+            /* Right section - now for Publications/Projects */
+            .articles { /* Renamed from .repositories */
+                background-color: rgba(20, 27, 26, 0.8);
+                padding: 2rem;
+                overflow-y: auto;
+                grid-column: 3; /* Place in the third column */
+                grid-row: 1 / 4; /* Span all rows so the background always fills the full screen height */
+            }
+
+            /* Card styling - apply to both left and right section cards */
+            .about .card, .articles .card { /* Updated selector for .articles */
+                background-color: rgba(22, 31, 29, 0.72);
+                -webkit-backdrop-filter: blur(6px);
+                backdrop-filter: blur(6px);
+                border: 1px solid #4b5a54;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                transition: transform 0.2s, box-shadow 0.2s;
+                color: #e2d8c3;
+            }
+
+            .about .card:hover, .articles .card:hover { /* Updated selector for .articles */
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Typography for About/Experience (left section) */
+            .about h2 {
+                color: #e39a62; /* Title for 'About Me' */
+            }
+
+            .about h3 {
+                color: #a8c49a; /* Title for Experience */
+            }
+
+            /* Typography for Publications/Projects (right section) */
+            .articles h2 {
+                color: #7aa6c2; /* Title for 'Publications/Projects' */
+            }
+
+            /* Article/Publication titles match experience title color */
+            .articles .card h3 {
+                margin-top: 0;
+                font-size: 1.2rem;
+                color: #a8c49a; /* Matches experience title color */
+            }
+
+            /* Publication title a touch larger than project titles */
+            #publications-view .card h3 {
+                font-size: 1.5rem;
+            }
+
+            /* Links row (DOI / repo / paper) separated from the text above */
+            .articles .card .pub-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.25rem;
+                margin-top: 1.1rem;
+            }
+
+            .articles .card .pub-links a {
+                margin: 0;
+            }
+
+            /* Toggle control for switching between Publications and Projects */
+            .view-toggle {
+                display: flex;
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .toggle-btn {
+                flex: 1; /* Equal widths, filling the row like the cards below */
+                font-family: inherit;
+                font-size: 1rem;
+                background-color: transparent;
+                color: #7aa6c2;
+                border: 1px solid #4b5a54;
+                border-radius: 8px;
+                padding: 0.5rem 1.1rem;
+                cursor: pointer;
+                transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+            }
+
+            .toggle-btn:hover {
+                border-color: #7aa6c2;
+            }
+
+            .toggle-btn.active {
+                background-color: rgba(22, 31, 29, 0.72);
+                color: #7aa6c2;
+                border-color: #7aa6c2;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Hidden view */
+            .view[hidden] {
+                display: none;
+            }
+
+            /* Author list for publications, with the owner's name highlighted */
+            .articles .card .authors {
+                font-size: 0.9rem;
+                color: #e2d8c3;
+                line-height: 1.5;
+                margin: 0.5rem 0;
+            }
+
+            .articles .card .authors .me {
+                color: #e39a62;
+                font-weight: bold;
+            }
+
+            /* Conference/journal line */
+            .articles .card .venue {
+                font-size: 0.75rem;
+                color: #e8bf6a;
+                font-style: italic;
+                margin: 0.5rem 0 0;
+            }
+
+            /* Award year line */
+            .articles .card .award-year {
+                font-size: 0.85rem;
+                color: #7aa6c2;
+                font-weight: bold;
+                margin: 0.5rem 0;
+            }
+
+            /* Link styling - apply to both sections and profile */
+            .about a, .profile a, .articles .card a { /* Updated selector for .articles */
+                margin: 0.5rem 0;
+                color: #7aa6c2;
+                text-decoration: none;
+            }
+
+            .about a:hover, .profile a:hover, .articles .card a:hover { /* Updated selector for .articles */
+                text-decoration: underline;
+            }
+
+            /* Profile image and text styles */
+            .profile img {
+                width: 250px;
+                height: 250px;
+                border-radius: 50%;
+                border: 4px solid #141b1a;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                object-fit: cover;
+                margin-bottom: 1rem;
+            }
+
+            .profile h1 {
+                margin: 0.5rem 0;
+                color: #e39a62;
+            }
+
+            .profile p {
+                margin: 0.5rem 0;
+                color: #e2d8c3;
+            }
+
+            /* Styles for article/project metadata (e.g., stars) - minor adjustments needed */
+            .articles .card p {
+                font-size: 0.9rem;
+                color: #e2d8c3;
+            }
+
+            .articles .card .stars {
+                font-size: 0.8rem;
+                color: #e8bf6a; /* Star color is fine */
+            }
+
+            /* Media Queries (adjusted to reflect new structure) */
+
+            @media (max-width: 1800px) {
+                .articles .card h3 {
+                    font-size: 1rem;
+                }
+                #publications-view .card h3 {
+                    font-size: 1.25rem;
+                }
+            }
+
+            @media (max-width: 1300px) {
+                .layout {
+                    grid-template-columns: 40% 20% 40%;
+                    grid-template-rows: auto 1fr auto;
+                }
+
+                .profile img {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .profile h1 {
+                    font-size: 1.5rem;
+                }
+
+                .profile p {
+                    font-size: 1rem;
+                }
+
+                .about,
+                .articles {
+                    padding: 1rem;
+                }
+
+                .about .card,
+                .articles .card {
+                    padding: 1rem;
+                }
+
+                .articles .card h3 {
+                    font-size: 0.8rem;
+                }
+
+                #publications-view .card h3 {
+                    font-size: 1rem;
+                }
+
+                .toggle-btn {
+                    font-size: 0.85rem;
+                    padding: 0.4rem 0.8rem;
+                }
+            }
+
+            @media (max-width: 800px) {
+                .layout {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: 1fr;
+                }
+
+                .profile {
+                    padding: 1rem;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    grid-column: 1; /* Single column layout for mobile */
+                    grid-row: 1;
+                    /* Solid on mobile, where the photo isn't credited */
+                    background-color: #1a2422;
+                    border: none;
+                }
+
+                .profile img {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .profile h1 {
+                    font-size: 1.5rem;
+                }
+
+                .profile p {
+                    font-size: 1rem;
+                    margin: 0.4rem 0;
+                }
+
+                .profile a {
+                    font-size: 1rem;
+                    margin: 0.4rem 0;
+                }
+
+                /* Background photo isn't visible behind the solid profile column */
+                .profile .photo-credit {
+                    display: none;
+                }
+
+                /* Hide side panels in mobile view as per original code, only showing profile */
+                .about, .articles {
+                    display: none;
+                }
+            }
+
+            /* Canvas background - no change needed */
+            #binary-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+        </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <canvas id="binary-canvas"></canvas>
+
+        <div class="layout">
+            <div class="about">
+                <div class="card">
+                    <h2>About Me</h2>
+                    <p>Currently pursuing a MSc in Computer Science at <i>EPFL</i> and working as a Research Assistant at <i>PARSA</i>.</p>
+                    <p>My current research focuses on reconfigurable architecrues, but I am broadly interested in computer architecture, compilers and programming languages.</p>
+                </div>
+                <div class="card">
+                    <h3>Parallel Systems Architecture Lab, EPFL</h3>
+                    <a>Research Assistant, September 2026 - </a>
+                </div>
+                <div class="card">
+                    <h3>Microsoft Development Center Serbia</h3>
+                    <a>Software Engineering Intern, November 2025 - March 2026</a>
+                </div>
+                <div class="card">
+                    <h3>Parallel Systems Architecture Lab, EPFL</h3>
+                    <a>Research Intern, May 2025 - July 2025</a>
+                </div>
+            </div>
+
+            <div class="profile">
+                <img src="profile.jpeg" alt="Luka Kurešević">
+                <h1>Luka Kurešević</h1>
+                <p>Computer Science, EPFL</p>
+                <p>(MSc, 2026 - )</p>
+                <p4></p4>
+                <p>Computer Science, University of Novi Sad</p>
+                <p>(BSc, 2023 - 2026)</p>
+                <a href="CV_Luka_Kurešević.pdf" target="_blank"><i class="fas fa-file-alt"></i> CV</a>
+                <br>
+                <a href="https://github.com/lkuresevic" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <br>
+                <a href="https://www.linkedin.com/in/luka-kure%C5%A1evi%C4%87-4bb341339/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a class="photo-credit" href="https://www.instagram.com/micony.jpg" target="_blank">background photo by @micony.jpg</a>
+            </div>
+
+            <div class="articles" id="articles-container">
+                <div class="view-toggle">
+                    <button class="toggle-btn active" data-view="publications">Publications</button>
+                    <button class="toggle-btn" data-view="projects">Projects</button>
+                    <button class="toggle-btn" data-view="awards">Awards</button>
+                </div>
+
+                <!-- Publications (default) -->
+                <div class="view" id="publications-view">
+                    <div class="card">
+                        <h3>PathSteiner: Improving PathFinder with Quasi-Optimal Steiner-Tree Initialization</h3>
+                        <p class="authors">Shashwat Shrivastava, <span class="me">Luka Kurešević</span>, Alexandros Poupakis, Chirag Ravishankar, Dinesh Gaitonde, Stefan Nikolić, Mirjana Stojilović</p>
+                        <p class="venue">Proceedings of the IEEE Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM), 2026</p>
+                        <div class="pub-links">
+                            <a href="https://infoscience.epfl.ch/entities/publication/eecd1714-2dd6-48da-ba95-0f228c841b74" target="_blank">(read)</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects -->
+                <div class="view" id="projects-view" hidden>
+                    <div class="card">
+                        <h3>Agentic Timing Closure for FPGAs</h3>
+                        <a>(repo available soon)</a>
+                        <p>As part of team <b style="color: #e39a62">Novi CAD</b>, I participated in the <b style="color: #a8c49a">Agentic FPGA Backend Optimization Competition</b> hosted at the FPL'26 conference. The challenge was as follows:</p>
+                        <p>Given a fully placed and routed design checkpoint (DCP), create a new DCP that improves its maximum clock frequency (Fmax) as much as possible while maintaining logical equivalence and staying fully placed and routed.</p>
+                        <p>We placed <b style="color: #a8c49a">7th</b> out of 91 teams and won an <b style="color: #a8c49a">honorable mention</b></p>
+                        <p class="stars">Agentic FPGA Optimization Contest @ FPL'26</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Detecting Anomalies in Attributed Networks Using GNNs and the Dominant Framework</h3>
+                        <a href="https://github.com/lkuresevic/anomaly-detection" target="_blank">(view repo)</a>
+                        <p>Proposed and evaluated a variant of the DOMINANT autoencoder framework, utilizing Graph Attention Networks (GAT) for anomaly detection in attributed networks.</p>
+                        <p class="stars">Coursework</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Performance Comparison of CNN and LSTM Architectures for Environmental Sound Classification</h3>
+                        <a href="https://github.com/lkuresevic/urban_sound_classifier" target="_blank">(view repo)</a>
+                        <p>Preprocessed audio samples (UrbanSound8K) into Mel spectrograms. Evaluated and compared the performance of ResNet (CNN) and LSTM models using 10-fold cross-validation to analyze the impact of model complexity, dropout, and learning rate on environmental sound classification accuracy.</p>
+                        <p class="stars">Coursework</p>
+                    </div>
+                </div>
+
+                <!-- Awards -->
+                <div class="view" id="awards-view" hidden>
+                    <div class="card">
+                        <h3>Faculty of Sciences Ambassador</h3>
+                        <p>Awarded for promoting the Faculty of Sciences and its values through international achievements and representation.</p>
+                        <p class="venue">Faculty of Sciences, University of Novi Sad</p>
+                        <p class="award-year">2026</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>IC Master Research Scholarship</h3>
+                        <p class="venue">School of Computer and Communication Sciences, EPFL</p>
+                        <p class="award-year">2026</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Honorable Mention</h3>
+                        <p>7th place as part of team <b style="color: #e39a62">Novi CAD</b></p>
+                        <p class="venue">Agentic FPGA Backend Optimization Competition @ FPL'26</p>
+                        <p class="award-year">2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // --- Publications / Projects / Awards toggle ---
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            const views = {
+                publications: document.getElementById('publications-view'),
+                projects: document.getElementById('projects-view'),
+                awards: document.getElementById('awards-view')
+            };
+
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selected = btn.dataset.view;
+                    toggleButtons.forEach(b => b.classList.toggle('active', b === btn));
+                    Object.keys(views).forEach(key => {
+                        views[key].hidden = (key !== selected);
+                    });
+                });
+            });
+
+            // --- Binary Rain Canvas Logic (Kept for visual effect) ---
+            const canvas = document.getElementById('binary-canvas');
+            const ctx = canvas.getContext('2d');
+            const colors = ['#e39a62', '#a8c49a', '#7aa6c2', '#e8bf6a', '#e2d8c3'];
+            const binaryChars = ['0', '1'];
+            let binaryElements = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initBinaryElements();
+            }
+
+            function initBinaryElements() {
+                binaryElements = [];
+                const fontSize = 16;
+                const columns = Math.floor(canvas.width / fontSize);
+                const rows = Math.floor(canvas.height / fontSize);
+
+                for (let i = 0; i < columns; i++) {
+                    for (let j = 0; j < rows; j++) {
+                        if (Math.random() > 0.7) { // Only populate 70% of positions
+                            binaryElements.push({
+                                x: i * fontSize,
+                                y: j * fontSize,
+                                char: binaryChars[Math.floor(Math.random() * binaryChars.length)],
+                                color: colors[Math.floor(Math.random() * colors.length)],
+                                speed: 0.5 + Math.random() * 2,
+                                opacity: 0.1 + Math.random() * 0.5
+                            });
+                        }
+                    }
+                }
+            }
+
+            function drawBinary() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '16px Consolas, monospace';
+
+                binaryElements.forEach(el => {
+                    ctx.fillStyle = el.color;
+                    ctx.globalAlpha = el.opacity;
+                    ctx.fillText(el.char, el.x, el.y);
+
+                    // Update position
+                    el.y += el.speed;
+
+                    // Reset if off screen
+                    if (el.y > canvas.height) {
+                        el.y = 0;
+                        el.x = Math.random() * canvas.width;
+                        el.char = binaryChars[Math.floor(Math.random() * binaryChars.length)];
+                        el.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+                });
+
+                ctx.globalAlpha = 1;
+            }
+
+            function animate() {
+                drawBinary();
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animate();
+        </script>
+    </body>
+    </html>
